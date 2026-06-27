@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScriptGen AI — YouTube Video ko New Script Mein Badlo</title>
+  <meta name="description" content="YouTube video link paste karo, AI tumhara copyright-free naya script banayega" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --card: #1a1a24;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --red: #ff3b3b;
+      --red-dim: rgba(255,59,59,0.12);
+      --red-glow: rgba(255,59,59,0.25);
+      --text: #f0f0f0;
+      --text-secondary: #888;
+      --text-muted: #555;
+      --accent: #ff3b3b;
+      --success: #22c55e;
+      --success-dim: rgba(34,197,94,0.12);
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+      color: var(--text); text-decoration: none;
+    }
+    .logo-icon {
+      width: 32px; height: 32px; background: var(--red);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 13px; }
+    .nav-badge {
+      font-size: 11px; font-weight: 500; padding: 3px 10px;
+      background: var(--red-dim); color: var(--red);
+      border: 1px solid rgba(255,59,59,0.3); border-radius: 20px;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 5rem 1.5rem 3rem;
+      max-width: 720px; margin: 0 auto;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; height: 1px; width: 24px; background: var(--red); opacity: 0.5;
+    }
+    h1 {
+      font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    h1 span { color: var(--red); }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--text-secondary);
+      max-width: 480px; margin: 0 auto 2.5rem;
+    }
+
+    /* MAIN TOOL CARD */
+    .tool-card {
+      max-width: 760px; margin: 0 auto 4rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .tool-card-body { padding: 2rem; }
+
+    /* URL INPUT */
+    .url-section { margin-bottom: 1.5rem; }
+    .url-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 0.6rem;
+    }
+    .url-label svg { opacity: 0.6; }
+    .input-row {
+      display: flex; gap: 10px;
+    }
+    .url-input {
+      flex: 1; height: 48px; padding: 0 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text); font-size: 14px;
+      font-family: var(--font-body);
+      outline: none; transition: border-color 0.2s;
+    }
+    .url-input:focus { border-color: var(--red); }
+    .url-input::placeholder { color: var(--text-muted); }
+    .btn-generate {
+      height: 48px; padding: 0 24px;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-generate:hover { opacity: 0.88; }
+    .btn-generate:active { transform: scale(0.97); }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-generate svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* VIDEO PREVIEW */
+    .video-preview {
+      display: none; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 1.5rem;
+    }
+    .video-preview.show { display: flex; }
+    .thumb-wrap {
+      width: 72px; height: 48px; border-radius: 8px;
+      overflow: hidden; flex-shrink: 0; position: relative;
+      background: #1e1e28;
+    }
+    .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-play {
+      position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.35);
+    }
+    .thumb-play svg { width: 20px; height: 20px; fill: white; }
+    .thumb-info { flex: 1; min-width: 0; }
+    .thumb-url { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thumb-id { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
+    .thumb-valid { color: var(--success); font-size: 11px; font-weight: 500; }
+
+    /* OPTIONS */
+    .options-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px; margin-bottom: 1.5rem;
+    }
+    @media (max-width: 580px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+    .opt-group label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: var(--text-secondary); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .opt-group select {
+      width: 100%; height: 40px; padding: 0 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text);
+      font-size: 13px; font-family: var(--font-body);
+      outline: none; cursor: pointer;
+      transition: border-color 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .opt-group select:focus { border-color: var(--red); }
+
+    /* CONTEXT INPUT */
+    .context-section { margin-bottom: 1.5rem; }
+    .context-label {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 6px; display: block;
+    }
+    .context-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text);
+      font-size: 13px; font-family: var(--font-body);
+      resize: vertical; min-height: 72px; max-height: 160px;
+      outline: none; line-height: 1.5; transition: border-color 0.2s;
+    }
+    .context-input:focus { border-color: var(--red); }
+    .context-input::placeholder { color: var(--text-muted); }
+    .context-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+    /* ERROR */
+    .error-box {
+      display: none; padding: 12px 16px; border-radius: 10px;
+      background: rgba(255,59,59,0.1); border: 1px solid rgba(255,59,59,0.3);
+      color: #ff6b6b; font-size: 13px; margin-bottom: 1.5rem;
+    }
+    .error-box.show { display: block; }
+
+    /* LOADING */
+    .loading-state {
+      display: none; text-align: center; padding: 3rem 2rem;
+    }
+    .loading-state.show { display: block; }
+    .loading-spinner {
+      width: 40px; height: 40px; margin: 0 auto 1rem;
+      border: 2px solid var(--border); border-top-color: var(--red);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-steps { list-style: none; text-align: left; max-width: 260px; margin: 0 auto; }
+    .loading-steps li {
+      font-size: 13px; color: var(--text-muted);
+      padding: 4px 0; display: flex; align-items: center; gap: 8px;
+      transition: color 0.3s;
+    }
+    .loading-steps li.active { color: var(--text); }
+    .loading-steps li.done { color: var(--success); }
+    .step-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor; flex-shrink: 0;
+    }
+
+    /* RESULT */
+    .result-state { display: none; }
+    .result-state.show { display: block; }
+
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem; padding: 0 2rem;
+    }
+    .result-title {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 600;
+    }
+    .result-actions { display: flex; gap: 8px; }
+    .btn-sm {
+      height: 34px; padding: 0 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 500; font-family: var(--font-body);
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn-outline {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--border-hover); color: var(--text); }
+    .btn-red {
+      background: var(--red-dim); color: var(--red);
+      border: 1px solid rgba(255,59,59,0.3);
+    }
+    .btn-red:hover { background: rgba(255,59,59,0.2); }
+
+    /* TABS */
+    .tabs {
+      display: flex; gap: 0; border-bottom: 1px solid var(--border);
+      padding: 0 2rem; overflow-x: auto;
+    }
+    .tab-btn {
+      height: 44px; padding: 0 18px;
+      background: transparent; color: var(--text-muted);
+      border: none; border-bottom: 2px solid transparent;
+      font-size: 13px; font-weight: 500; font-family: var(--font-body);
+      cursor: pointer; white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+
+    /* TAB CONTENT */
+    .tab-panels { padding: 1.5rem 2rem 2rem; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .script-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem;
+      font-size: 14px; line-height: 1.85;
+      color: var(--text); white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 480px; overflow-y: auto;
+    }
+    .script-block::-webkit-scrollbar { width: 4px; }
+    .script-block::-webkit-scrollbar-track { background: transparent; }
+    .script-block::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex; gap: 24px; padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n { font-size: 1.25rem; font-weight: 600; font-family: var(--font-display); color: var(--text); }
+    .stat-l { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+
+    /* HOW IT WORKS */
+    .how-section {
+      max-width: 760px; margin: 0 auto 5rem; padding: 0 1.5rem;
+    }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 500; color: var(--red);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .how-title {
+      font-family: var(--font-display); font-size: 1.6rem;
+      font-weight: 700; margin-bottom: 2rem;
+    }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 580px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+    }
+    .step-num {
+      font-family: var(--font-display); font-size: 2rem; font-weight: 700;
+      color: var(--red); opacity: 0.3; margin-bottom: 0.75rem; line-height: 1;
+    }
+    .step-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 0.5rem; }
+    .step-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem; text-align: center;
+      font-size: 12px; color: var(--text-muted);
+    }
+    footer a { color: var(--red); text-decoration: none; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 20px;
+      font-size: 13px; color: var(--text);
+      opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* MOBILE */
+    @media (max-width: 640px) {
+      nav { padding: 0.875rem 1.25rem; }
+      .hero { padding: 3rem 1.25rem 2rem; }
+      .tool-card-body { padding: 1.25rem; }
+      .input-row { flex-direction: column; }
+      .btn-generate { width: 100%; justify-content: center; }
+      .result-header, .tabs, .tab-panels, .stats-bar { padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="/">
+      <div class="logo-icon">
+        <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.6 2.2C19.4 1.4 18.8.8 18 .6 16.4.2 10 .2 10 .2S3.6.2 2 .6C1.2.8.6 1.4.4 2.2 0 3.8 0 7 0 7s0 3.2.4 4.8c.2.8.8 1.4 1.6 1.6C3.6 13.8 10 13.8 10 13.8s6.4 0 8-.4c.8-.2 1.4-.8 1.6-1.6C20 10.2 20 7 20 7s0-3.2-.4-4.8z" fill="white"/>
+          <path d="M8 10L13 7 8 4v6z" fill="#ff3b3b"/>
+        </svg>
+      </div>
+      ScriptGen AI
+    </a>
+    <span class="nav-badge">Free Tool</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">AI-Powered Script Generator</div>
+    <h1>YouTube Video ko <span>Naya Script</span> Mein Badlo</h1>
+    <p class="hero-sub">Kisi bhi YouTube video ka link paste karo — AI us topic par ek brand new, copyright-free script likhega.</p>
+  </section>
+
+  <!-- TOOL -->
+  <main>
+    <div class="tool-card" id="toolCard">
+      <div class="tool-card-body">
+
+        <!-- URL INPUT -->
+        <div class="url-section">
+          <div class="url-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            YouTube Video Link
+          </div>
+          <div class="input-row">
+            <input type="url" id="urlInput" class="url-input"
+              placeholder="https://www.youtube.com/watch?v=..."
+              autocomplete="off" spellcheck="false" />
+            <button class="btn-generate" id="generateBtn" onclick="startGenerate()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Generate Script
+            </button>
+          </div>
+        </div>
+
+        <!-- VIDEO PREVIEW -->
+        <div class="video-preview" id="videoPreview">
+          <div class="thumb-wrap">
+            <img id="thumbImg" src="" alt="" />
+            <div class="thumb-play">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+          <div class="thumb-info">
+            <div class="thumb-url" id="previewUrl"></div>
+            <div class="thumb-id" id="previewId"></div>
+            <div class="thumb-valid">✓ Valid YouTube link</div>
+          </div>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="options-grid">
+          <div class="opt-group">
+            <label>Style</label>
+            <select id="scriptStyle">
+              <option value="educational">Educational</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="vlog">Vlog Style</option>
+              <option value="documentary">Documentary</option>
+              <option value="news">News Report</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label>Language</label>
+            <select id="language">
+              <option value="hinglish">Hinglish</option>
+              <option value="hindi">Pure Hindi</option>
+              <option value="english">English</option>
+              <option value="gujarati">Gujarati</option>
+            </select>
+          </div>
+          <div class="opt-group">
+            <label>Length</label>
+            <select id="scriptLength">
+              <option value="short">Short (3-5 min)</option>
+              <option value="medium" selected>Medium (8-12 min)</option>
+              <option value="long">Long (15-20 min)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CONTEXT -->
+        <div class="context-section">
+          <label class="context-label">Video ke baare mein kuch aur bataao (optional)</label>
+          <textarea id="contextInput" class="context-input"
+            placeholder="Jaise: 'Ye video cooking ke baare mein hai' ya 'Main tech niche mein hoon' — jitna zyada bataoge, utna better script banega..."></textarea>
+          <div class="context-hint">💡 Video title, description ya koi bhi hint yahan paste kar sakte ho</div>
+        </div>
+
+        <!-- ERROR -->
+        <div class="error-box" id="errorBox"></div>
+
+        <!-- LOADING -->
+        <div class="loading-state" id="loadingState">
+          <div class="loading-spinner"></div>
+          <ul class="loading-steps">
+            <li id="step1"><span class="step-dot"></span>Video link verify kar raha hoon...</li>
+            <li id="step2"><span class="step-dot"></span>Topic analyze kar raha hoon...</li>
+            <li id="step3"><span class="step-dot"></span>Original script likh raha hoon...</li>
+            <li id="step4"><span class="step-dot"></span>Final polish kar raha hoon...</li>
+          </ul>
+        </div>
+
+      </div><!-- /tool-card-body -->
+
+      <!-- RESULT -->
+      <div class="result-state" id="resultState">
+        <div class="result-header">
+          <div class="result-title">Aapka Naya Copyright-Free Script ✨</div>
+          <div class="result-actions">
+            <button class="btn-sm btn-outline" onclick="copyAll()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy All
+            </button>
+            <button class="btn-sm btn-red" onclick="startGenerate()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Regenerate
+            </button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('script')">📝 Full Script</button>
+          <button class="tab-btn" onclick="switchTab('hook')">🎣 Hook / Intro</button>
+          <button class="tab-btn" onclick="switchTab('outro')">🎬 Outro</button>
+          <button class="tab-btn" onclick="switchTab('tags')">🏷️ Tags & Title</button>
+        </div>
+
+        <div class="tab-panels">
+          <div class="tab-panel active" id="panel-script">
+            <div class="script-block" id="scriptContent"></div>
+          </div>
+          <div class="tab-panel" id="panel-hook">
+            <div class="script-block" id="hookContent"></div>
+          </div>
+          <div class="tab-panel" id="panel-outro">
+            <div class="script-block" id="outroContent"></div>
+          </div>
+          <div class="tab-panel" id="panel-tags">
+            <div class="script-block" id="tagsContent"></div>
+          </div>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-n" id="statWords">—</div>
+            <div class="stat-l">Words</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n" id="statTime">—</div>
+            <div class="stat-l">Read time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n" id="statSections">—</div>
+            <div class="stat-l">Sections</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n" id="statScore">100%</div>
+            <div class="stat-l">Original</div>
+          </div>
+        </div>
+      </div><!-- /result-state -->
+
+    </div><!-- /tool-card -->
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section">
+      <div class="section-eyebrow">Process</div>
+      <h2 class="how-title">Kaise kaam karta hai?</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Link Paste Karo</h3>
+          <p>Kisi bhi YouTube video ka URL copy karke input mein paste karo. Shorts, long videos — sab kuch kaam karta hai.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>AI Analyze Karta Hai</h3>
+          <p>Hamara AI video ID se topic samajhta hai aur ek poora naya script plan karta hai — same topic, bilkul original words.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Naya Script Milta Hai</h3>
+          <p>Full script, catchy hook, strong outro, aur SEO-friendly title + tags — sab kuch ready milega ek click mein.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>ScriptGen AI — Made with ❤️ &nbsp;|&nbsp; Powered by Claude AI &nbsp;|&nbsp;
+    <a href="https://vercel.com" target="_blank" rel="noopener">Hosted on Vercel</a></p>
+    <p style="margin-top:6px; font-size:11px; color:#333;">
+      Ye tool sirf naya original content banata hai. Kisi bhi video ka original content copy nahi karta.
+    </p>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── UTILS ──────────────────────────────────────────────────────────
+    function extractVideoId(url) {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+        /^([a-zA-Z0-9_-]{11})$/
+      ];
+      for (const p of patterns) {
+        const m = (url || '').match(p);
+        if (m) return m[1];
+      }
+      return null;
+    }
+
+    function showToast(msg, dur = 2500) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), dur);
+    }
+
+    // ── URL PREVIEW ────────────────────────────────────────────────────
+    const urlInput = document.getElementById('urlInput');
+    urlInput.addEventListener('input', () => {
+      const vid = extractVideoId(urlInput.value.trim());
+      const preview = document.getElementById('videoPreview');
+      if (vid) {
+        document.getElementById('thumbImg').src = `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
+        document.getElementById('previewUrl').textContent =
+          urlInput.value.length > 58 ? urlInput.value.slice(0, 58) + '…' : urlInput.value;
+        document.getElementById('previewId').textContent = 'Video ID: ' + vid;
+        preview.classList.add('show');
+        document.getElementById('errorBox').classList.remove('show');
+      } else {
+        preview.classList.remove('show');
+      }
+    });
+
+    urlInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') startGenerate();
+    });
+
+    // ── TABS ───────────────────────────────────────────────────────────
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
+    }
+
+    // ── COPY ───────────────────────────────────────────────────────────
+    function copyAll() {
+      const txt = document.getElementById('scriptContent').textContent;
+      navigator.clipboard.writeText(txt).then(() => showToast('✓ Script copied!')).catch(() => {});
+    }
+
+    // ── LOADING STEPS ─────────────────────────────────────────────────
+    let stepTimer = null;
+    function animateSteps() {
+      const steps = ['step1','step2','step3','step4'];
+      let i = 0;
+      steps.forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.remove('active','done');
+      });
+      function next() {
+        if (i > 0) document.getElementById(steps[i-1]).classList.replace('active','done');
+        if (i < steps.length) {
+          document.getElementById(steps[i]).classList.add('active');
+          i++;
+          stepTimer = setTimeout(next, 1800);
+        }
+      }
+      next();
+    }
+
+    // ── MAIN GENERATE ─────────────────────────────────────────────────
+    async function startGenerate() {
+      const url = urlInput.value.trim();
+      const videoId = extractVideoId(url);
+      const style = document.getElementById('scriptStyle').value;
+      const lang = document.getElementById('language').value;
+      const length = document.getElementById('scriptLength').value;
+      const context = document.getElementById('contextInput').value.trim();
+      const errorBox = document.getElementById('errorBox');
+
+      errorBox.classList.remove('show');
+
+      if (!url) {
+        errorBox.textContent = '⚠️ Pehle YouTube video ka link paste karo.';
+        errorBox.classList.add('show');
+        return;
+      }
+      if (!videoId) {
+        errorBox.textContent = '⚠️ Yeh valid YouTube link nahi hai. Example: https://youtube.com/watch?v=dQw4w9WgXcQ';
+        errorBox.classList.add('show');
+        return;
+      }
+
+      // UI — loading
+      document.getElementById('generateBtn').disabled = true;
+      document.getElementById('generateBtn').innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+        </svg>
+        Generating...`;
+      document.getElementById('resultState').classList.remove('show');
+      document.getElementById('loadingState').classList.add('show');
+      animateSteps();
+
+      const lengthMap = { short: '400-600 words', medium: '800-1200 words', long: '1500-2000 words' };
+      const langMap = {
+        hinglish: 'Hinglish (Hindi + English mix, conversational)',
+        hindi: 'Pure Hindi (Devanagari roman transliteration)',
+        english: 'English',
+        gujarati: 'Gujarati roman transliteration'
+      };
+      const styleMap = {
+        educational: 'educational and informative',
+        entertainment: 'entertaining and engaging',
+        vlog: 'personal vlog-style and conversational',
+        documentary: 'documentary-style, serious and in-depth',
+        news: 'news report style, factual and clear'
+      };
+
+      const prompt = `You are a professional YouTube script writer. A user has given you this YouTube video URL: ${url} (Video ID: ${videoId}).
+
+${context ? `Additional context from user: "${context}"` : ''}
+
+Your job is to write a completely ORIGINAL, copyright-free script on the SAME TOPIC or NICHE that this video likely covers. You must NOT copy any original content — write everything fresh in your own words.
+
+Script requirements:
+- Style: ${styleMap[style]}
+- Language: ${langMap[lang]}
+- Target length: ${lengthMap[length]}
+- Include natural speech patterns, pauses [pause], and emphasis [EMPHASIS]
+
+Respond ONLY with this exact JSON structure (no markdown, no backticks):
+{
+  "topic": "guessed topic in one line",
+  "script": "full script here with natural paragraph breaks",
+  "hook": "a punchy 3-4 line opening hook to grab viewer attention",
+  "outro": "a 3-4 line strong closing with call to action (like, subscribe, comment)",
+  "title": "5 catchy video title ideas (numbered list)",
+  "tags": "20 relevant hashtags and keywords separated by commas"
+}`;
+
+      try {
+        const resp = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await resp.json();
+
+        // Show any error returned from server (with full detail for debugging)
+        if (data.error) {
+          throw new Error(data.error + (data.detail ? '\n\nDetail: ' + data.detail : ''));
+        }
+
+        if (!data.result) {
+          throw new Error('Server se koi result nahi aaya. Response: ' + JSON.stringify(data));
+        }
+
+        let parsed;
+
+        try {
+          const clean = data.result.replace(/```json|```/g, '').trim();
+          parsed = JSON.parse(clean);
+        } catch {
+          parsed = {
+            topic: 'Generated Content',
+            script: data.result,
+            hook: '',
+            outro: '',
+            title: '',
+            tags: ''
+          };
+        }
+
+        // Fill result
+        document.getElementById('scriptContent').textContent = parsed.script || data.result;
+        document.getElementById('hookContent').textContent = parsed.hook || 'Hook generate nahi hua. Regenerate try karo.';
+        document.getElementById('outroContent').textContent = parsed.outro || 'Outro generate nahi hua.';
+        document.getElementById('tagsContent').textContent =
+          (parsed.title ? '🎬 Title Ideas:\n' + parsed.title + '\n\n' : '') +
+          (parsed.tags ? '🏷️ Tags:\n' + parsed.tags : '');
+
+        // Stats
+        const words = (parsed.script || '').trim().split(/\s+/).length;
+        document.getElementById('statWords').textContent = words.toLocaleString();
+        document.getElementById('statTime').textContent = Math.ceil(words / 150) + ' min';
+        document.getElementById('statSections').textContent = ((parsed.script || '').match(/\n\n/g) || []).length + 1;
+
+        // Show result
+        if (stepTimer) clearTimeout(stepTimer);
+        document.getElementById('loadingState').classList.remove('show');
+        document.getElementById('resultState').classList.add('show');
+
+        // Reset tabs
+        document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+        document.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === 0));
+
+        setTimeout(() => document.getElementById('resultState').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+      } catch (err) {
+        if (stepTimer) clearTimeout(stepTimer);
+        document.getElementById('loadingState').classList.remove('show');
+        errorBox.style.whiteSpace = 'pre-wrap'; errorBox.textContent = '⚠️ Error:
+' + (err.message || 'Network problem. Dobara try karo.');
+        errorBox.classList.add('show');
+      }
+
+      document.getElementById('generateBtn').disabled = false;
+      document.getElementById('generateBtn').innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+        Generate Script`;
+    }
+  </script>
+</body>
+</html>
